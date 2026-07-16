@@ -1,0 +1,13 @@
+CREATE TABLE `eso_wf_bak2` (
+  `WFB_ID` varchar(20) NOT NULL,
+  `WFB_TAS_ID` varchar(20) DEFAULT NULL,
+  `WFB_TYPE_CD` varchar(20) DEFAULT NULL,
+  `WFB_SRC_ENT_ID` varchar(20) DEFAULT NULL,
+  `WFB_SRC_ID` varchar(20) DEFAULT NULL,
+  `WFB_CMBAK_ID` varchar(20) DEFAULT NULL,
+  `WFB_REG_DTTM` varchar(14) DEFAULT NULL,
+  `WFB_REG_EMP_ID` varchar(20) DEFAULT NULL,
+  `WFB_APP_ID` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`WFB_ID`),
+  KEY `IX_ESO_WF_BAK2_01` (`WFB_SRC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

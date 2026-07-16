@@ -1,0 +1,21 @@
+SELECT t.cm_id AS "key",
+       t.cm_id,
+       t.cm_cat_cd,
+       t1.wfc_src_ent_id,
+       t.cm_equ_name,                       /* 백업 대상(장비명) */
+       t.cm_host_name,                      /* 호스트네임 */
+       get_codename(t.cm_sta_cd) AS sta_cd, /* 자산상태 */
+       t.cm_serial_no,                      /* 시리얼번호 */
+       t.cm_se_num,                         /* 일련번호 */
+       t.cm_use_cd,                         /* 용도 */
+       t.cm_oa_name,                        /* 제품명 */
+       get_codename(t.cm_cat_cd) AS cat_name,/* 자산분류 */
+       t2.*
+FROM eso_cm t
+INNER JOIN (
+    SELECT wfc_cm_id, wfc_src_ent_id
+    FROM eso_wf_cm 
+    #{cond1} -- WHERE wfc_src_id = 'SR2512-01837'
+) t1 ON t.cm_id = t1.wfc_cm_id
+LEFT JOIN eso_cm_bak2 t2 on t.cm_id = t2.cmbak_source_name 
+ORDER BY t.cm_id;

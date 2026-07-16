@@ -1,0 +1,77 @@
+INSERT INTO eso_wf_cm (
+    wfc_id, 
+    wfc_tas_id, 
+    wfc_src_ent_id, 
+    wfc_src_id,   
+    wfc_cm_id, 
+    wfc_reg_dttm, 
+    wfc_reg_emp_id
+)
+SELECT
+    ?,         -- wfc_id
+    ?,         -- tas_id
+    ?,         -- ent_id
+    ?,         -- rel_key (wfc_src_id)
+    ?,         -- cm_id(key)
+    ?,         -- wfc_reg_dttm
+    ?          -- wfc_reg_emp_id
+FROM eso_cm cm
+WHERE cm.cm_id = ?          -- 여기에 대상 cm_id 전달
+  AND NOT EXISTS (
+    SELECT 1
+    FROM eso_wf_cm wf
+    WHERE wf.wfc_cm_id = cm.cm_id
+      AND wf.wfc_src_id = ?
+  )
+__END__
+
+{
+     "cols":"id,tas_id,ent_id,#rel_key,key,#cur_dttm,#emp_id,key,#rel_key",
+     "vars":"id=ent_seq.CM",
+     "require":"#rel_key,key"
+} 
+
+
+INSERT INTO eso_wf_bak2 (
+    wfb_id, wfb_src_id, wfb_reg_dttm, wfb_reg_emp_id, wfb_status,
+    wfb_cmbak_id, wfb_cmbak_type, wfb_cmbak_cha, wfb_cmbak_sort,
+    wfb_cmbak_per, wfb_cmbak_stg_per, wfb_cmbak_actstart_dttm,
+    wfb_cmbak_diss, wfb_cmbak_used, wfb_cmbak_start_dttm, wfb_cmbak_end_dttm,
+    wfb_cmbak_req_emp, wfb_cmbak_source_name, wfb_cmbak_source_host,
+    wfb_cmbak_source_equ, wfb_cmbak_target_name, wfb_cmbak_target_host,
+    wfb_cmbak_target_equ
+)
+SELECT
+    -- 1. wfb_id 생성 (순번 정렬 기준 추가)
+    CONCAT(?, '_', LPAD(ROW_NUMBER() OVER (ORDER BY bak.cmbak_id), 2, '0')),
+    ?,                          -- 2. wfb_src_id
+    ?,                          -- 3. wfb_reg_dttm
+    ?,                          -- 4. wfb_reg_emp_id
+    'CODBS_VIEW',               -- 5. wfb_status (고정값)
+    ?,                          -- 6. wfb_cmbak_id (쉼표 추가됨)
+    bak.cmbak_type,             -- 7. 이하 컬럼들 매핑 시작
+    bak.cmbak_cha,
+    bak.cmbak_sort,
+    bak.cmbak_per,
+    bak.cmbak_stg_per,
+    bak.cmbak_actstart_dttm,
+    bak.cmbak_diss,
+    bak.cmbak_used,
+    bak.cmbak_start_dttm,
+    bak.cmbak_end_dttm,
+    bak.cmbak_req_emp,
+    bak.cmbak_source_name,
+    bak.cmbak_source_host,
+    bak.cmbak_source_equ,
+    bak.cmbak_target_name,
+    bak.cmbak_target_host,
+    bak.cmbak_target_equ
+FROM eso_cm_bak2 bak
+WHERE bak.cmbak_source_name = ?
+__END__
+
+{
+     "cols":"id,#rel_key,#cur_dttm,#emp_id,key,key",
+     "vars":"id=ent_seq.WFBAK",
+     "require":"#rel_key,key"
+} 
